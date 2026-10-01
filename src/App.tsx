@@ -12,7 +12,7 @@ export default function App() {
   return (
     <>
       <Header />
-      <main className="wrap content">
+      <main>
         <Routes>
           <Route path="/" element={<Home />} />
           {subPages.map((p) => (

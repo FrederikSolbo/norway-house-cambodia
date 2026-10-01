@@ -4,19 +4,31 @@ import NavList from './Nav';
 import { siteMap } from '../siteMap';
 import { logo } from '../content';
 
+function useScrolledPast(px: number) {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setPast(window.scrollY > px);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [px]);
+  return past;
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const location = useLocation();
+  const compact = useScrolledPast(220);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
   return (
-    <header className="header">
-      <div className="wrap header-inner">
+    <>
+      <header className="header">
         <Link to="/" className="logo">
           {logoFailed ? (
-            <span>{logo.alt}</span>
+            <span className="logo-text">{logo.alt}</span>
           ) : (
             <img src={logo.src} alt={logo.alt} onError={() => setLogoFailed(true)} />
           )}
@@ -27,12 +39,21 @@ export default function Header() {
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((o) => !o)}
         >
-          &#9776;
+          <span />
+          <span />
+          <span />
         </button>
-        <nav className={`main-nav${menuOpen ? ' open' : ''}`}>
+        <nav className={`main-nav${menuOpen ? ' open' : ''}`} aria-label="Hovedmeny">
+          <NavList items={siteMap} />
+        </nav>
+      </header>
+
+      {/* Slim bar that slides in once the big header scrolls away, like the original theme */}
+      <div className={`sticky-bar${compact ? ' show' : ''}`} aria-hidden={!compact}>
+        <nav>
           <NavList items={siteMap} />
         </nav>
       </div>
-    </header>
+    </>
   );
 }

@@ -17,7 +17,7 @@ export default function NavList({ items, depth = 0 }: NavListProps) {
             className={({ isActive }) => (isActive ? 'active' : undefined)}
           >
             {item.title}
-            {item.children && depth > 0 ? ' >' : ''}
+            {item.children && depth > 0 && <span className="caret" aria-hidden>›</span>}
           </NavLink>
           {item.children && <NavList items={item.children} depth={depth + 1} />}
         </li>
